@@ -22,7 +22,7 @@ class ProjectController extends Controller
             ->where('name', $keywords)
             ->orwhere('email', $keywords)
             ->orwhere('sdt', $keywords)
-            ->Paginate(3);
+            ->Paginate(3)->withQueryString();
         }else{
             $list = $this->users
             ->orderBy('created_at','DESC')
