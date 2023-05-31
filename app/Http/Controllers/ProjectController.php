@@ -14,15 +14,28 @@ class ProjectController extends Controller
     public function __construct(){
         $this->users = new Project();
     }
-    public function showListUser(){
-        $list = $this->users->orderBy('created_at','DESC')->Paginate(3);
-        // dd($list);
+
+    public function showListUser(Request $request){
+        $keywords = $request->keywords;
+        if(!empty($keywords)){
+            $list = $this->users
+            ->where('name', $keywords)
+            ->orwhere('email', $keywords)
+            ->orwhere('sdt', $keywords)
+            ->Paginate(3);
+        }else{
+            $list = $this->users
+            ->orderBy('created_at','DESC')
+            ->Paginate(3);
+        }
+
         return view('index', compact('list'));
-        // dd($users);
     }
+
     public function addUser(){
         return view('add_user');
     }
+
     public function postUser(InfomationUserRequest $request){
         $post = new Project;
         $post->name = $request->name;
@@ -31,11 +44,13 @@ class ProjectController extends Controller
         $post->save();
         return redirect()->route('project.show_list_user');
     }
+
     public function indexUpdateUser(Request $request){
         $infomation = Project::find($request->id);
 
         return view('update_user', compact('infomation'));
     }
+    
     public function updateUser(InfomationUserRequest $request){
         $updateUser = Project::find($request->id);
         $updateUser->name = $request->name;
@@ -44,6 +59,7 @@ class ProjectController extends Controller
         $updateUser->save();
         return redirect()->route('project.show_list_user');
     }
+
     public function deleteUser(Request $request){
         $deleteUser = Project::find($request->id);
         $deleteUser->delete();
